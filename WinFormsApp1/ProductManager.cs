@@ -2,14 +2,23 @@
 
 public sealed class ProductManager
 {
-    private static readonly object padlock = new object();
-    
     private static readonly Lazy<ProductManager> _instance =
         new Lazy<ProductManager>(() => new ProductManager());
 
     private List<Product> _products = new List<Product>();
+    
+    private readonly object _lock = new object();
 
-    public List<Product> Products => _products;
+    public List<Product> Products
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return new List<Product>(_products);
+            }
+        }
+    }
     public static ProductManager Instance
     {
         get
@@ -29,6 +38,14 @@ public sealed class ProductManager
             return false;
         
         _products.Add(new Product(id));
+        var fileSaver = FileSaver.Instance;
+        fileSaver.AddFile(new CsvSaveJob()
+        {
+            FilePath = "D:\\Dat\\Cognex\\products.csv",
+            Data = $"{id}, Good, Product, Good",
+            Header = "Id, Product, Good,May, Good, Fuck,Great"
+        });
+        
         return true;
     }
     

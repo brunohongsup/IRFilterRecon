@@ -12,7 +12,7 @@ static class Program
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
         var productManager = ProductManager.Instance;
-        for (int idx = 0; idx < 1000; idx++)
+        for (int idx = 0; idx < 10; idx++)
         {
             productManager.AddProduct(RandomStringGenerator.GenerateRandomString(10));
         }
