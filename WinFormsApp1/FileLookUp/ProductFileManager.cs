@@ -8,8 +8,12 @@ namespace WinFormsApp1;
 public class ProductFileManager
 {
     private readonly string _baseDirectory = @"D:\DAT\IMAGE";
-
+    
     // Get all files for a specific product and date
+    
+    private static readonly Lazy<ProductFileManager> _instance = new Lazy<ProductFileManager>(() => new ProductFileManager());
+    
+    public static ProductFileManager Instance => _instance.Value;
     public ProductFiles GetProductFiles(DateTime date, string productId)
     {
         string directory = BuildPath(date, productId);
@@ -25,12 +29,12 @@ public class ProductFileManager
         };
 
         // Get CSV file
-        string csvPath = Path.Combine(directory, "ProductData.csv");
+        string csvPath = Path.Combine(directory, "*.csv");
         if (File.Exists(csvPath))
             result.CsvFile = csvPath;
 
         // Get all image files
-        result.ImageFiles = Directory.GetFiles(directory, "ProductImages-*.jpg")
+        result.ImageFiles = Directory.GetFiles(directory, "*.bmp")
             .OrderBy(f => f)
             .ToList();
 

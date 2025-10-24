@@ -9,5 +9,4 @@ public class ProductFiles
     public List<string> ImageFiles { get; set; } = new List<string>();
     
     public bool HasData => CsvFile != null || ImageFiles.Any();
-    public int ImageCount => ImageFiles.Count;
 }
