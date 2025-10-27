@@ -14,7 +14,7 @@ public class ProductFileManager
     private static readonly Lazy<ProductFileManager> _instance = new Lazy<ProductFileManager>(() => new ProductFileManager());
     
     public static ProductFileManager Instance => _instance.Value;
-    public ProductFiles GetProductFiles(DateTime date, string productId)
+    public ProductFiles? GetProductFiles(DateTime date, string productId)
     {
         string directory = BuildPath(date, productId);
         

@@ -1,3 +1,6 @@
+using System.Security.Permissions;
+using WinFormsApp1.Models;
+
 namespace WinFormsApp1;
 
 static class Program
@@ -16,6 +19,9 @@ static class Program
         {
             productManager.AddProduct(RandomStringGenerator.GenerateRandomString(10));
         }
+        
+        var workermManager = WorkersManager.Instance;
+        workermManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage));
        
         Application.Run(new Form1());
     }

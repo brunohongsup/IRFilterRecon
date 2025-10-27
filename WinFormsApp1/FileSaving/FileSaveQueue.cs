@@ -28,9 +28,9 @@ public class FileSaver
         _worker = Task.Run(() => ProcessFiles());
     }
 
-    public void AddFile(FileSaveJob fileData)
+    public bool AddFile(FileSaveJob fileData)
     {
-        _queue.Add(fileData);
+        return _queue.TryAdd(fileData);
     }
 
     private void ProcessFiles()

@@ -23,7 +23,6 @@ public class CFW_LoadStage : ForeWorkerBase
         _posState = EPosState.Unknown;
         _silentStopFlag = false;
         _alignResults = new AlignResult[(int)EFrameAlignSel.Num];
-        ClearFrameAlignResult();
     }
 
     public bool LockControl { get => _lockControl; set => _lockControl = value; }

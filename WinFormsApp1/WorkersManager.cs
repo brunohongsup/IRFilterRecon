@@ -14,7 +14,7 @@ public sealed class WorkersManager
     private readonly Dictionary<EForeWorkerKey, ForeWorkerBase> _workers;
     private readonly object _lock = new();
 
-    public event EventHandler<ForeWorkerStatusEventArgs> StatusBroadcast;
+    public event EventHandler<ForeWorkerStatusEventArgs>? StatusBroadcast;
 
     private WorkersManager()
     {
@@ -40,22 +40,27 @@ public sealed class WorkersManager
     }
 
     // Start single worker
-    public void StartWorker(EForeWorkerKey key)
+    // 1. [수정] 메서드를 비동기(async)로 변경하고 Task를 반환하도록 합니다.
+    public async Task StartWorker(EForeWorkerKey key)
     {
+        // 2. [전제] _workers는 ConcurrentDictionary<EForeWorkerKey, ForeWorker>라고 가정합니다.
         if (_workers.TryGetValue(key, out var worker))
         {
             OnStatus($"Starting worker: {key}");
-            worker.StartWorker();
+        
+            // 3. [수정] 워커의 StartWorker가 완료될 때까지 "대기"합니다.
+            // 이는 내부의 StopWorker 로직이 완료되기를 보장합니다.
+            await worker.StartWorker(); 
         }
     }
 
     // Stop single worker
-    public void StopWorker(EForeWorkerKey key)
+    public async Task StopWorker(EForeWorkerKey key)
     {
         if (_workers.TryGetValue(key, out var worker))
         {
             OnStatus($"Stopping worker: {key}");
-            worker.StopWorker();
+            await worker.StopWorker();
         }
     }
 
@@ -72,15 +77,12 @@ public sealed class WorkersManager
     }
 
     // Start all workers
-    public void StartAll()
+    public async Task StartAll()
     {
-        lock (_lock)
+        foreach (var kvp in _workers)
         {
-            foreach (var kvp in _workers)
-            {
-                OnStatus($"Starting [{kvp.Key}]...");
-                kvp.Value.StartWorker();
-            }
+            OnStatus($"Starting [{kvp.Key}]...");
+            await kvp.Value.StartWorker();
         }
     }
 
@@ -101,11 +103,12 @@ public sealed class WorkersManager
                 }));
             }
         }
+        
         await Task.WhenAll(tasks);
         OnStatus("All workers stopped.");
     }
 
-    private void Worker_StatusUpdated(object sender, ForeWorkerStatusEventArgs e)
+    private void Worker_StatusUpdated(object? sender, ForeWorkerStatusEventArgs e)
     {
         StatusBroadcast?.Invoke(this, e);
     }

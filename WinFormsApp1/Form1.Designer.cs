@@ -31,6 +31,8 @@ partial class Form1
     {
         dataGridView1 = new System.Windows.Forms.DataGridView();
         listBoxLog = new System.Windows.Forms.ListBox();
+        button1 = new System.Windows.Forms.Button();
+        button2 = new System.Windows.Forms.Button();
         ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
         SuspendLayout();
         // 
@@ -52,17 +54,43 @@ partial class Form1
         listBoxLog.Size = new System.Drawing.Size(493, 170);
         listBoxLog.TabIndex = 1;
         // 
+        // button1
+        // 
+        button1.Location = new System.Drawing.Point(691, 81);
+        button1.Name = "button1";
+        button1.Size = new System.Drawing.Size(78, 28);
+        button1.TabIndex = 2;
+        button1.Text = "Start";
+        button1.UseVisualStyleBackColor = true;
+        button1.Click += button1_Click;
+        // 
+        // button2
+        // 
+        button2.Location = new System.Drawing.Point(691, 191);
+        button2.Name = "button2";
+        button2.Size = new System.Drawing.Size(78, 28);
+        button2.TabIndex = 3;
+        button2.Text = "Stop";
+        button2.UseVisualStyleBackColor = true;
+        button2.Click += button2_Click;
+        // 
         // Form1
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         ClientSize = new System.Drawing.Size(857, 554);
+        Controls.Add(button2);
+        Controls.Add(button1);
         Controls.Add(listBoxLog);
         Controls.Add(dataGridView1);
         Text = "Form1";
         ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
         ResumeLayout(false);
     }
+
+    private System.Windows.Forms.Button button2;
+
+    private System.Windows.Forms.Button button1;
 
     private System.Windows.Forms.ListBox listBoxLog;
 

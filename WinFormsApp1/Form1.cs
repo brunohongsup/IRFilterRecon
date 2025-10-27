@@ -1,3 +1,5 @@
+using WinFormsApp1.ForegroundWorker;
+
 namespace WinFormsApp1;
 
 public partial class Form1 : Form
@@ -20,23 +22,37 @@ public partial class Form1 : Form
             HeaderText = "Time"
         });
         
+        var workermManager = WorkersManager.Instance;
+        workermManager.StatusBroadcast += AddLog;
+
 
     }
     
-    private void AddLog(string message)
+    private void AddLog(object? sender, ForeWorkerStatusEventArgs foreWorkerStatusEventArgs)
     {
         if (InvokeRequired)
         {
-            BeginInvoke(new Action<string>(AddLog), message);
+            BeginInvoke(new Action<object, ForeWorkerStatusEventArgs>(AddLog), sender, foreWorkerStatusEventArgs);
             return;
         }
 
         if (listBoxLog.Items.Count > 1000)
             listBoxLog.Items.RemoveAt(0);
 
-        string line = $"[{DateTime.Now:HH:mm:ss}] {message}";
+        string line = $"[{foreWorkerStatusEventArgs.Timestamp}] {foreWorkerStatusEventArgs.Message}";
         listBoxLog.Items.Add(line);
         listBoxLog.TopIndex = listBoxLog.Items.Count - 1; // auto-scroll
     }
 
+    private async void button1_Click(object sender, EventArgs e)
+    {
+        var workerManager = WorkersManager.Instance;
+        await workerManager.StartAll();
+    }
+
+    private async void button2_Click(object sender, EventArgs e)
+    {
+        var workerManager = WorkersManager.Instance;
+        await workerManager.StopAllAsync();
+    }
 }
