@@ -96,10 +96,10 @@ public sealed class WorkersManager
             {
                 var k = kvp.Key;
                 var w = kvp.Value;
-                tasks.Add(Task.Run(() =>
+                tasks.Add(Task.Run(async () =>
                 {
                     OnStatus($"Stopping [{k}]...");
-                    w.StopWorker();
+                    await w.StopWorker();
                 }));
             }
         }

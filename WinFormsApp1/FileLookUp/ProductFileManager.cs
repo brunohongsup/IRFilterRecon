@@ -140,7 +140,7 @@ public class ProductFileManager
     }
 
     // Get specific image by index
-    public string GetProductImage(DateTime date, string productId, int imageIndex)
+    public string? GetProductImage(DateTime date, string productId, int imageIndex)
     {
         string directory = BuildPath(date, productId);
         string imagePath = Path.Combine(directory, $"ProductImages-{imageIndex}.jpg");

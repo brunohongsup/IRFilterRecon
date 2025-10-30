@@ -148,9 +148,6 @@ public abstract class ForeWorkerBase
 
 public virtual async Task StopWorker()
 {
-    // 1. 비동기 락 획득 (Start/Stop 동시 실행 방지)
-    await _startStopLock.WaitAsync();
-
     try
     {
         if (_workerTask == null || _cts == null)
