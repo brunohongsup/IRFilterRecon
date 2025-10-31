@@ -63,12 +63,15 @@ public class CFW_LoadStage : ForeWorkerBase
 
                     case 20:
                         OnStatus("Aligning frame...");
-                        await DelayAsync(200, token);
+                        //ToDo Get Align Data
+                        await Task.Delay(200, token);
                         Next(30);
                         break;
 
                     case 30:
                         OnStatus("Alignment complete.");
+                        
+                        //ToDo Get Align Data
                         _posState = EPosState.IsSafety;
                         _output = OutState.Ready;
                         _input = InState.Ready;
@@ -76,7 +79,7 @@ public class CFW_LoadStage : ForeWorkerBase
                         break;
 
                     case 100:
-                        await DelayAsync(100, token);
+                        await Task.Delay(100, token);
                         break;
                 }
 
@@ -97,18 +100,6 @@ public class CFW_LoadStage : ForeWorkerBase
     }
 
     // Helper method to support token cancellation
-    private async Task DelayAsync(int milliseconds, CancellationToken token)
-    {
-        try
-        {
-            await Task.Delay(milliseconds, token);
-        }
-        catch (TaskCanceledException)
-        {
-            // Expected cancellation path — no error
-        }
-    }
-
     private void ClearFrameAlignResult()
     {
         for (int i = 0; i < _alignResults.Length; i++)

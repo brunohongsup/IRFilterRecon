@@ -24,8 +24,6 @@ public partial class Form1 : Form
         
         var workermManager = WorkersManager.Instance;
         workermManager.StatusBroadcast += AddLog;
-
-
     }
     
     private void AddLog(object? sender, ForeWorkerStatusEventArgs foreWorkerStatusEventArgs)

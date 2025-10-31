@@ -20,8 +20,8 @@ static class Program
             productManager.AddProduct(RandomStringGenerator.GenerateRandomString(10));
         }
         
-        var workermManager = WorkersManager.Instance;
-        workermManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage));
+        var workersManager = WorkersManager.Instance;
+        workersManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage));
        
         Application.Run(new Form1());
     }
