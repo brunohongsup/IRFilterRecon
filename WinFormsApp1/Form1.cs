@@ -45,7 +45,7 @@ public partial class Form1 : Form
     private async void button1_Click(object sender, EventArgs e)
     {
         var workerManager = WorkersManager.Instance;
-        await workerManager.StartAll();
+        await workerManager.StartAllAsync();
     }
 
     private async void button2_Click(object sender, EventArgs e)

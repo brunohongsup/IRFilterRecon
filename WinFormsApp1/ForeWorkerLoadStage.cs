@@ -30,6 +30,8 @@ public class CFW_LoadStage : ForeWorkerBase
     public EPosState PosState => _posState;
     public void SetDryRunFrameComplete(bool complete) => _dryRunFrameComplete = complete;
 
+    private List<InspectionTask> _inspectionTasks = new List<InspectionTask>();
+
     public override async Task Work(CancellationToken token)
     {
         OnStatus($"[{_keyType}] Worker started.");
@@ -70,8 +72,14 @@ public class CFW_LoadStage : ForeWorkerBase
 
                     case 30:
                         OnStatus("Alignment complete.");
+                        var threadpool = Threadpool.Instance;
+                        for(int i = 0; i < 1000; i++)
+                        {
+                            var inspection = new InspectionTask();
+                            threadpool.AddWork(inspection);
+                            _inspectionTasks.Add(inspection);
+                        }
                         
-                        //ToDo Get Align Data
                         _posState = EPosState.IsSafety;
                         _output = OutState.Ready;
                         _input = InState.Ready;
@@ -79,17 +87,41 @@ public class CFW_LoadStage : ForeWorkerBase
                         break;
 
                     case 100:
-                        await Task.Delay(100, token);
+                        bool allCompleted = true;
+                        foreach (var insp in _inspectionTasks)
+                        {
+                            if (!insp.IsCompleted)
+                            {
+                                allCompleted = false;
+                                break;
+                            }
+                        }
+
+                        if (!allCompleted)
+                        {
+                            OnStatus("Waiting for the inspection tasks completed.");
+                            await Task.Delay(10, token);
+                        }
+
+                        else
+                        {
+                            OnStatus("All Task Done");
+                            _inspectionTasks.Clear();
+                            Next(110);
+                        }
+
                         break;
                 }
 
                 await Task.Delay(10, token);
             }
         }
+
         catch (OperationCanceledException)
         {
             OnStatus($"[{_keyType}] Worker cancellation detected.");
         }
+
         finally
         {
             _output = OutState.Busy;

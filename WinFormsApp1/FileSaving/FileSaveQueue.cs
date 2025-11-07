@@ -9,8 +9,6 @@ public class FileSaver
     
     private readonly BlockingCollection<FileSaveJob> _queue;
     
-    private readonly Task _worker;
-    
     private readonly CancellationTokenSource _cts;
 
     public static FileSaver Instance
@@ -25,12 +23,15 @@ public class FileSaver
     {
         _queue = new BlockingCollection<FileSaveJob>(maxQueueSize);
         _cts = new CancellationTokenSource();
-        _worker = Task.Run(() => ProcessFiles());
     }
 
     public bool AddFile(FileSaveJob fileData)
     {
-        return _queue.TryAdd(fileData);
+        bool bRet = _queue.TryAdd(fileData);
+        var processFiles = new RandomTask(ProcessFiles);
+        Threadpool.Instance.AddWork(processFiles);
+
+        return bRet;
     }
 
     private void ProcessFiles()
@@ -53,7 +54,6 @@ public class FileSaver
     public void Dispose()
     {
         _queue.CompleteAdding();  // Stop accepting new items
-        _worker.Wait();            // Wait for queue to drain
         _queue.Dispose();
         _cts.Dispose();
     }

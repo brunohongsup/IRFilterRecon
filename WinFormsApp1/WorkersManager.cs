@@ -77,7 +77,7 @@ public sealed class WorkersManager
     }
 
     // Start all workers
-    public async Task StartAll()
+    public async Task StartAllAsync()
     {
         foreach (var kvp in _workers)
         {

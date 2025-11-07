@@ -16,9 +16,7 @@ static class Program
         ApplicationConfiguration.Initialize();
         var productManager = ProductManager.Instance;
         for (int idx = 0; idx < 10; idx++)
-        {
             productManager.AddProduct(RandomStringGenerator.GenerateRandomString(10));
-        }
         
         var workersManager = WorkersManager.Instance;
         workersManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage));
