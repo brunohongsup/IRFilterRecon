@@ -14,8 +14,9 @@ public class CFW_LoadStage : ForeWorkerBase
     private bool _dryRunFrameComplete;
     private EFrameFilterType _sortingFilterType;
     private bool _silentStopFlag;
+    private readonly Form1 _mainForm;
 
-    public CFW_LoadStage(EForeWorkerKey key)
+    public CFW_LoadStage(EForeWorkerKey key, Form1 form)
         : base(key.ToString())
     {
         _keyType = key;
@@ -23,6 +24,7 @@ public class CFW_LoadStage : ForeWorkerBase
         _posState = EPosState.Unknown;
         _silentStopFlag = false;
         _alignResults = new AlignResult[(int)EFrameAlignSel.Num];
+        _mainForm = form;
     }
 
     public bool LockControl { get => _lockControl; set => _lockControl = value; }
@@ -59,6 +61,8 @@ public class CFW_LoadStage : ForeWorkerBase
                         _output = OutState.Busy;
                         ClearFrameAlignResult();
                         _posState = EPosState.Unknown;
+                        var productManager = ProductManager.Instance;
+                        productManager.CreateNewProduct();
                         OnStatus("Initializing alignment...");
                         Next(20);
                         break;
@@ -73,7 +77,7 @@ public class CFW_LoadStage : ForeWorkerBase
                     case 30:
                         OnStatus("Alignment complete.");
                         var threadpool = Threadpool.Instance;
-                        for(int i = 0; i < 1000; i++)
+                        for(int i = 0; i < 200; i++)
                         {
                             var inspection = new InspectionTask();
                             threadpool.AddWork(inspection);
@@ -99,7 +103,6 @@ public class CFW_LoadStage : ForeWorkerBase
 
                         if (!allCompleted)
                         {
-                            OnStatus("Waiting for the inspection tasks completed.");
                             await Task.Delay(10, token);
                         }
 
@@ -107,7 +110,7 @@ public class CFW_LoadStage : ForeWorkerBase
                         {
                             OnStatus("All Task Done");
                             _inspectionTasks.Clear();
-                            Next(110);
+                            Next(10);
                         }
 
                         break;

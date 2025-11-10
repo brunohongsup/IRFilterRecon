@@ -7,9 +7,12 @@ public class FileSaver
     private static readonly Lazy<FileSaver> _instance =
         new Lazy<FileSaver>(() => new FileSaver(10000));
     
-    private readonly BlockingCollection<FileSaveJob> _queue;
+    private Queue<FileSaveJob> _queue;
     
     private readonly CancellationTokenSource _cts;
+
+    private bool _running = false;
+
 
     public static FileSaver Instance
     {
@@ -21,40 +24,49 @@ public class FileSaver
 
     private FileSaver(int maxQueueSize = 1000)
     {
-        _queue = new BlockingCollection<FileSaveJob>(maxQueueSize);
+        _queue = new Queue<FileSaveJob>(maxQueueSize);
         _cts = new CancellationTokenSource();
     }
 
     public bool AddFile(FileSaveJob fileData)
     {
-        bool bRet = _queue.TryAdd(fileData);
-        var processFiles = new RandomTask(ProcessFiles);
-        Threadpool.Instance.AddWork(processFiles);
+        lock(_queue)
+        {
+            _queue.Enqueue(fileData);
+        }
 
-        return bRet;
+        if (!_running)
+        {
+            _running = true;
+            var processFiles = new RandomTask(ProcessFiles);
+            Threadpool.Instance.AddWork(processFiles);
+        }
+
+
+        return true;
     }
 
     private void ProcessFiles()
     {
-        foreach (var file in _queue.GetConsumingEnumerable(_cts.Token))
+        while (_running)
         {
-            try
+            Thread.Sleep(100);
+            FileSaveJob? fileJob = null;
+            lock(_queue)
             {
-                file.Save();
+                if(_queue.Count == 0)
+                    continue;
+
+                fileJob = _queue.Dequeue();
             }
-            
-            catch (Exception ex)
-            {
-                // Log the error - don't let it kill the worker
-                Console.WriteLine($"Failed to save {file.FilePath}: {ex.Message}");
-            }
+
+            fileJob.Save(); 
         }
     }
 
     public void Dispose()
     {
-        _queue.CompleteAdding();  // Stop accepting new items
-        _queue.Dispose();
+        _queue.Clear();
         _cts.Dispose();
     }
     

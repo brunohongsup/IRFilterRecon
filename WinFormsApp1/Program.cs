@@ -14,13 +14,10 @@ static class Program
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
-        var productManager = ProductManager.Instance;
-        for (int idx = 0; idx < 10; idx++)
-            productManager.AddProduct(RandomStringGenerator.GenerateRandomString(10));
-        
         var workersManager = WorkersManager.Instance;
-        workersManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage));
+        var mainForm = new Form1();
+        workersManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage, mainForm));
        
-        Application.Run(new Form1());
+        Application.Run(mainForm);
     }
 }
