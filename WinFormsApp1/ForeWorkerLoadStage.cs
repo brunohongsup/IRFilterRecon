@@ -14,9 +14,8 @@ public class CFW_LoadStage : ForeWorkerBase
     private bool _dryRunFrameComplete;
     private EFrameFilterType _sortingFilterType;
     private bool _silentStopFlag;
-    private readonly Form1 _mainForm;
 
-    public CFW_LoadStage(EForeWorkerKey key, Form1 form)
+    public CFW_LoadStage(EForeWorkerKey key)
         : base(key.ToString())
     {
         _keyType = key;
@@ -24,7 +23,6 @@ public class CFW_LoadStage : ForeWorkerBase
         _posState = EPosState.Unknown;
         _silentStopFlag = false;
         _alignResults = new AlignResult[(int)EFrameAlignSel.Num];
-        _mainForm = form;
     }
 
     public bool LockControl { get => _lockControl; set => _lockControl = value; }
@@ -63,6 +61,7 @@ public class CFW_LoadStage : ForeWorkerBase
                         _posState = EPosState.Unknown;
                         var productManager = ProductManager.Instance;
                         productManager.CreateNewProduct();
+
                         OnStatus("Initializing alignment...");
                         Next(20);
                         break;

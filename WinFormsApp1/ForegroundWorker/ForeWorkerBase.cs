@@ -71,18 +71,6 @@ public abstract class ForeWorkerBase
         _curStep = step;
     }
 
-    protected async Task Delay(int milliseconds, CancellationToken token)
-    {
-        try
-        {
-            await Task.Delay(milliseconds, token);
-        }
-        catch (TaskCanceledException)
-        {
-            // expected when stopped normally
-        }
-    }
-
     public virtual void ResetStep()
     {
         _lastStep = 10;

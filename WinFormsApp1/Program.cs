@@ -16,7 +16,7 @@ static class Program
         ApplicationConfiguration.Initialize();
         var workersManager = WorkersManager.Instance;
         var mainForm = new Form1();
-        workersManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage, mainForm));
+        workersManager.RegisterWorker(EForeWorkerKey.LoadStage, new CFW_LoadStage(EForeWorkerKey.LoadStage));
        
         Application.Run(mainForm);
     }
